@@ -23,10 +23,9 @@ $.ajax({
         'method': 'GET',
         'success': function(data) {
             vendite = data;
-            console.log(vendite);
 
             // richiamo la funzione per ciclare il risultato otteneto dall'API;
-            ciclo_vendite(vendite)
+            ciclo_vendite(vendite);
         },
     'error': function() {
         alert('si è verificato un errore');
@@ -35,17 +34,30 @@ $.ajax({
 
 // funzione per ciclare l'array ricevuto come risposta dall'API;
 function ciclo_vendite(vendite) {
+    var mesi = {};
     for (var i = 0; i < vendite.length; i++) {
-        var vendita = vendite[i]
+        var vendita = vendite[i];
         console.log(vendita);
-        month(vendita.date)
+
+        var valore_vendita_corrente = vendita.amount;
+        var current_month = extract_month(vendita.date);
+        console.log(current_month);
+
+        if(!mesi.hasOwnProperty(current_month)) {
+            mesi[current_month] = valore_vendita_corrente;
+        } else {
+            mesi[current_month] += valore_vendita_corrente;
+        }
+
     }
+    console.log(mesi);
 }
 
-function month(date) {
-    var check = moment(date, 'DD/MM/YYYY')
-    var month = check.format('M')
-    console.log(month);
+// funzione per ricavare solo il mese dalla data completa;
+function extract_month(date) {
+    var check = moment(date, 'DD/MM/YYYY');
+    var month = check.format('MM');
+    return month
 }
 
 
