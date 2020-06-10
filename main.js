@@ -16,6 +16,14 @@
 
 // Indirizzo API: 157.230.17.132:4025/sales
 
+// Da questi dati dobbiamo creare due grafici:
+// 1. Andamento delle vendite totali della nostra azienda con un grafico di tipo Line
+// (http://www.chartjs.org/docs/latest/charts/line.html) con un unico dataset che
+// conterrà il numero di vendite totali mese per mese nel 2017.
+
+
+// 2.Il   secondo   grafico   è   quello   a   torta (http://www.chartjs.org/docs/latest/charts/doughnut.html)   che   evidenzierà   il contributo   di   ogni   venditore   per   l’anno   2017.   Il   valore   dovrà   essere   la percentuale   di   vendite   effettuate   da   quel   venditore   (fatturato_del   venditore   / fatturato_totale)
+
 
 // faccio partire chiamata ajax per ricavare la lista delle vendite;
 $.ajax({
@@ -42,14 +50,18 @@ $.ajax({
 // funzione per ciclare l'array ricevuto come risposta dall'API;
 
 var mesi = {};
+var sellers = {}
+var fatturato_totale = 0;
 function ciclo_vendite(vendite) {
 
     for (var i = 0; i < vendite.length; i++) {
         var vendita = vendite[i];
 
-
         var valore_vendita_corrente = vendita.amount;
         var current_month = extract_month(vendita.date);
+        var current_seller = vendita.salesman;
+
+        fatturato_totale += valore_vendita_corrente;
 
 
         if(!mesi.hasOwnProperty(current_month)) {
@@ -57,9 +69,65 @@ function ciclo_vendite(vendite) {
         } else {
             mesi[current_month] += valore_vendita_corrente;
         }
+
+        if(!sellers.hasOwnProperty(current_seller)) {
+            sellers[current_seller] = valore_vendita_corrente;
+        } else {
+            sellers[current_seller] += valore_vendita_corrente;
+        }
     }
+    console.log(fatturato_totale);
+    var values = Object.values(sellers);
+    var percentuali = [];
+    for (var i = 0; i < values.length; i++) {
+        var valore_corrente = values[i]
+        percentuali.push(Math.round((valore_corrente / fatturato_totale ) * 100))
+
+
+    }
+    console.log(percentuali);
+    var chiavi = Object.keys(sellers);
+    console.log(chiavi);
+
+    // creo il grafico con chartjs;
+    var ctx = $('#myChart2')[0].getContext('2d');
+
+    var myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: chiavi,
+            datasets: [{
+                label: 'Fatturato',
+                data: percentuali ,
+                backgroundColor: [
+                    'rgb(255, 99, 132)',
+                    'rgb(54, 162, 235)',
+                    'rgb(255, 206, 86)',
+                    'rgb(75, 192, 192)',
+                    'rgb(153, 102, 255)',
+                ],
+                borderColor: [
+                    'rgb(255, 99, 132)',
+                    'rgb(54, 162, 235)',
+                    'rgb(255, 206, 86)',
+                    'rgb(75, 192, 192)',
+                    'rgb(153, 102, 255)'
+                ],
+                borderWidth: 2,
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Fatturato anno 2017 suddiviso per mese'
+            }
+        }
+    });
+
+
 }
 
+console.log(sellers);
 
 
 // funzione per ricavare solo il mese dalla data completa;
@@ -99,9 +167,3 @@ function create_chart(valori) {
         }
     });
 }
-
-
-// Da questi dati dobbiamo creare due grafici:
-// 1. Andamento delle vendite totali della nostra azienda con un grafico di tipo Line
-// (http://www.chartjs.org/docs/latest/charts/line.html) con un unico dataset che
-// conterrà il numero di vendite totali mese per mese nel 2017.

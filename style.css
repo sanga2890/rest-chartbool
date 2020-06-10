@@ -2,3 +2,7 @@
     max-width: 800px;
     margin: 0 auto;
 }
+
+canvas {
+    padding: 50px;
+}
