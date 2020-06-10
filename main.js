@@ -150,12 +150,26 @@ function create_chart(valori) {
                 label: 'Fatturato',
                 data: valori,
                 backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
+                    'transparent',
                 ],
                 borderColor: [
                     'rgba(255, 99, 132, 1)',
                 ],
-                borderWidth: 2,
+                pointBorderColor: [
+                    '#7ED3B2',
+                    '#4f3a65',
+                    '#A6CB12',
+                    '#FC3A52',
+                    '#CCA8E9',
+                    '#6699CC',
+                    '#85EF47',
+                    '#FFD400',
+                    '#C5C5C5',
+                    '#FFD5FF',
+                    '#3F59DA',
+                ],
+                borderWidth: 4,
+                lineTension: 0,
             }]
         },
         options: {
