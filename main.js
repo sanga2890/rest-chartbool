@@ -22,8 +22,17 @@ $.ajax({
         'success': function(data) {
             vendite = data;
             console.log(vendite);
+
+            ciclo_vendite(vendite)
         },
     'error': function() {
         alert('si è verificato un errore');
     }
 });
+
+function ciclo_vendite(vendite) {
+    for (var i = 0; i < vendite.length; i++) {
+        var vendita = vendite[i]
+        console.log(vendita);
+    }
+}
