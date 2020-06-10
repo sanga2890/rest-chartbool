@@ -29,34 +29,9 @@ $.ajax({
 
             // estraggo i valori dell'oggetto mesi indicante la vendita per ciascun mese;
             var valori = Object.values(mesi);
-            console.log(valori);
 
-            // creo il grafico con chartjs;
-            var ctx = $('#myChart')[0].getContext('2d');
-
-            var myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: [ 'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre' ],
-                    datasets: [{
-                        label: 'Fatturato',
-                        data: valori,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                        ],
-                        borderWidth: 2,
-                    }]
-                },
-                options: {
-                    title: {
-                        display: true,
-                        text: 'Fatturato anno 2017 suddiviso per mese'
-                    }
-                }
-            });
+            // richiamo la funzione per generare il grafico;
+            create_chart(valori);
 
         },
     'error': function() {
@@ -82,19 +57,47 @@ function ciclo_vendite(vendite) {
         } else {
             mesi[current_month] += valore_vendita_corrente;
         }
-
     }
-
 }
 
 
-console.log(mesi);
 
 // funzione per ricavare solo il mese dalla data completa;
 function extract_month(date) {
     var check = moment(date, 'DD/MM/YYYY');
     var month = check.format('M');
     return month
+}
+
+// funzione per creare il grafico con chartjs;
+function create_chart(valori) {
+
+    // creo il grafico con chartjs;
+    var ctx = $('#myChart')[0].getContext('2d');
+
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [ 'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre' ],
+            datasets: [{
+                label: 'Fatturato',
+                data: valori,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                ],
+                borderWidth: 2,
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Fatturato anno 2017 suddiviso per mese'
+            }
+        }
+    });
 }
 
 
