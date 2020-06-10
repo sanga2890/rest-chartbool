@@ -26,6 +26,37 @@ $.ajax({
 
             // richiamo la funzione per ciclare il risultato otteneto dall'API;
             ciclo_vendite(vendite);
+            var valori = Object.values(mesi);
+            console.log(valori);
+            var ctx = $('#myChart')[0].getContext('2d');
+
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [ 'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre' ],
+                    datasets: [{
+                        data: valori,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                        ],
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Ripartizione delle vendite del disco "Thriller" tra i vari continenti (espresse in milioni di dischi venduti)'
+                    }
+                }
+            });
+
         },
     'error': function() {
         alert('si è verificato un errore');
@@ -33,15 +64,17 @@ $.ajax({
 });
 
 // funzione per ciclare l'array ricevuto come risposta dall'API;
+
+var mesi = {};
 function ciclo_vendite(vendite) {
-    var mesi = {};
+
     for (var i = 0; i < vendite.length; i++) {
         var vendita = vendite[i];
-        console.log(vendita);
+
 
         var valore_vendita_corrente = vendita.amount;
         var current_month = extract_month(vendita.date);
-        console.log(current_month);
+
 
         if(!mesi.hasOwnProperty(current_month)) {
             mesi[current_month] = valore_vendita_corrente;
@@ -50,8 +83,11 @@ function ciclo_vendite(vendite) {
         }
 
     }
-    console.log(mesi);
+
 }
+
+
+
 
 // funzione per ricavare solo il mese dalla data completa;
 function extract_month(date) {
