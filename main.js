@@ -81,7 +81,7 @@ function ciclo_vendite(vendite) {
     var percentuali = [];
     for (var i = 0; i < values.length; i++) {
         var valore_corrente = values[i]
-        percentuali.push(Math.round((valore_corrente / fatturato_totale ) * 100))
+        percentuali.push(((valore_corrente / fatturato_totale ) * 100).toFixed(2));
 
 
     }
@@ -97,7 +97,6 @@ function ciclo_vendite(vendite) {
         data: {
             labels: chiavi,
             datasets: [{
-                label: 'Fatturato',
                 data: percentuali ,
                 backgroundColor: [
                     'rgb(255, 99, 132)',
@@ -119,7 +118,7 @@ function ciclo_vendite(vendite) {
         options: {
             title: {
                 display: true,
-                text: 'Fatturato anno 2017 suddiviso per mese'
+                text: 'Fatturato anno 2017 suddiviso in percentuale per ogni venditore'
             }
         }
     });
