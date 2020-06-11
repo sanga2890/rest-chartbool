@@ -85,43 +85,10 @@ function ciclo_vendite(vendite) {
 
 
     }
-    console.log(percentuali);
-    var chiavi = Object.keys(sellers);
-    console.log(chiavi);
+    var chiavi = Object.keys(sellers)
 
-    // creo il grafico con chartjs;
-    var ctx = $('#myChart2')[0].getContext('2d');
-
-    var myChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: chiavi,
-            datasets: [{
-                data: percentuali ,
-                backgroundColor: [
-                    'rgb(255, 99, 132)',
-                    'rgb(54, 162, 235)',
-                    'rgb(255, 206, 86)',
-                    'rgb(75, 192, 192)',
-                    'rgb(153, 102, 255)',
-                ],
-                borderColor: [
-                    'rgb(255, 99, 132)',
-                    'rgb(54, 162, 235)',
-                    'rgb(255, 206, 86)',
-                    'rgb(75, 192, 192)',
-                    'rgb(153, 102, 255)'
-                ],
-                borderWidth: 2,
-            }]
-        },
-        options: {
-            title: {
-                display: true,
-                text: 'Fatturato anno 2017 suddiviso in percentuale per ogni venditore'
-            }
-        }
-    });
+    // richiamo funzione per generare il secondo grafico;
+    grafico_vendite_percentuale(chiavi, percentuali)
 
 
 }
@@ -180,3 +147,71 @@ function create_chart(valori) {
         }
     });
 }
+
+// disegno il secondo grafico a torta;
+// creo una funzione;
+
+function grafico_vendite_percentuale(chiavi, percentuali) {
+    // creo il grafico con chartjs;
+    var ctx = $('#myChart2')[0].getContext('2d');
+
+    var myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: chiavi,
+            datasets: [{
+                data: percentuali ,
+                backgroundColor: [
+                    'rgb(255, 99, 132)',
+                    'rgb(54, 162, 235)',
+                    'rgb(255, 206, 86)',
+                    'rgb(75, 192, 192)',
+                    'rgb(153, 102, 255)',
+                ],
+                borderColor: [
+                    'rgb(255, 99, 132)',
+                    'rgb(54, 162, 235)',
+                    'rgb(255, 206, 86)',
+                    'rgb(75, 192, 192)',
+                    'rgb(153, 102, 255)'
+                ],
+                borderWidth: 2,
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Fatturato anno 2017 suddiviso in percentuale per ogni venditore'
+            }
+        }
+    });
+}
+
+// Milestone   2:
+// Ora   vogliamo   dare   la   possibilità   di   aggiungere   vendite. Creiamo   due   select,   una   contenente   i   nostri   venditori   e   l’altra   contenente   i mesi   dell’anno   e   una   input   per   inserire   il   valore   della   vendita. Aggiungiamo   un   bottone   e   onClick   dovremo   aggiungere   una   vendita   del valore   inserito   al   venditore   selezionato   per   il   mese   selezionato,   facendo   una chiamata   POST   a   /sales. I   grafici   andranno   modificati   mostrando   i   nuovi   dati.
+
+
+
+var aggiungi_vendita = {};
+
+// vado a leggere il valore della option selezionata;
+$('.sellers').change(function() {
+    // dichiaro una variabile che rappresenta il singolo elemento nell'elemento select;
+    var venditore = $(this).val();
+    aggiungi_vendita['salesman'] = venditore;
+
+})
+$('.months').change(function() {
+    // dichiaro una variabile che rappresenta il singolo elemento nell'elemento select;
+    var mese = $(this).val();
+    aggiungi_vendita['date'] = mese;
+
+})
+
+$('button').click(function() {
+    var input_val = $('.valore').val();
+    console.log(input_val);
+    aggiungi_vendita['amount'] = input_val;
+})
+
+console.log(aggiungi_vendita);

@@ -10,8 +10,37 @@
     </head>
     <body>
         <div class="container">
-            <canvas id="myChart"></canvas>
-            <canvas id="myChart2"></canvas>
+            <div class="inserisci-vendita">
+                <select class="sellers" name="venditori">
+                    <option value="Scegli venditore">Scegli venditore</option>
+                    <option value="Marco">Marco</option>
+                    <option value="Giuseppe">Giuseppe</option>
+                    <option value="Roberto">Roberto</option>
+                    <option value="Riccardo">Riccardo</option>
+                </select>
+                <select class="months" name="months">
+                    <option value="Scegli il mese">Scegli mese</option>
+                    <option value="Gennaio">Gennaio</option>
+                    <option value="Febbraio">Febbraio</option>
+                    <option value="Marzo">Marzo</option>
+                    <option value="Aprile">Aprile</option>
+                    <option value="Maggio">Maggio</option>
+                    <option value="Giugno">Giugno</option>
+                    <option value="Luglio">Luglio</option>
+                    <option value="Agosto">Agosto</option>
+                    <option value="Settembre">Settembre</option>
+                    <option value="Ottobre">Ottobre</option>
+                    <option value="Novembre">Novembre</option>
+                    <option value="Dicembre">Dicembre</option>
+                </select>
+                <input class="valore" type="text">
+                <button type="button" name="button">Aggiungi</button>
+            </div>
+            <div class="charts">
+                <canvas id="myChart"></canvas>
+                <canvas id="myChart2"></canvas>
+            </div>
+
 
         </div>
 
