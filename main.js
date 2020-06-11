@@ -211,7 +211,7 @@ $('.months').change(function() {
 $('button').click(function() {
     var input_val = $('.valore').val();
     console.log(input_val);
-    aggiungi_vendita['amount'] = input_val;
+    aggiungi_vendita['amount'] = parseInt(input_val);
 })
 
 console.log(aggiungi_vendita);
