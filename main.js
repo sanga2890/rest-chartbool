@@ -57,7 +57,7 @@ function ciclo_vendite(vendite) {
     for (var i = 0; i < vendite.length; i++) {
         var vendita = vendite[i];
 
-        var valore_vendita_corrente = vendita.amount;
+        var valore_vendita_corrente = parseInt(vendita.amount);
         var current_month = extract_month(vendita.date);
         var current_seller = vendita.salesman;
 
@@ -194,24 +194,26 @@ function grafico_vendite_percentuale(chiavi, percentuali) {
 
 var aggiungi_vendita = {};
 
-// vado a leggere il valore della option selezionata;
-$('.sellers').change(function() {
-    // dichiaro una variabile che rappresenta il singolo elemento nell'elemento select;
-    var venditore = $(this).val();
+$('button').click(function() {
+    var venditore = $('.sellers').val();
+    var input_val = $('.valore').val();
+    var mese = $('.months').val();
     aggiungi_vendita['salesman'] = venditore;
-
-})
-$('.months').change(function() {
-    // dichiaro una variabile che rappresenta il singolo elemento nell'elemento select;
-    var mese = $(this).val();
+    aggiungi_vendita['amount'] = parseInt(input_val);
     aggiungi_vendita['date'] = mese;
 
-})
-
-$('button').click(function() {
-    var input_val = $('.valore').val();
-    console.log(input_val);
-    aggiungi_vendita['amount'] = parseInt(input_val);
+    //
+    $.ajax({
+            'url': 'http://157.230.17.132:4025/sales',
+            'method': 'POST',
+            'data': aggiungi_vendita,
+            'success': function(data){
+                console.log(data);
+            },
+        'error': function() {
+            alert('si è verificato un errore');
+        }
+    });
 })
 
 console.log(aggiungi_vendita);
