@@ -24,79 +24,92 @@
 
 // 2.Il   secondo   grafico   è   quello   a   torta (http://www.chartjs.org/docs/latest/charts/doughnut.html)   che   evidenzierà   il contributo   di   ogni   venditore   per   l’anno   2017.   Il   valore   dovrà   essere   la percentuale   di   vendite   effettuate   da   quel   venditore   (fatturato_del   venditore   / fatturato_totale)
 
+// richiamo la funzione per generare tutti i grafici;
+generate_charts();
 
-// faccio partire chiamata ajax per ricavare la lista delle vendite;
-$.ajax({
-        'url': 'http://157.230.17.132:4025/sales',
-        'method': 'GET',
-        'success': function(data) {
-            vendite = data;
+// creo la funzione per generare i grafici;
+function generate_charts() {
 
-            // richiamo la funzione per ciclare il risultato otteneto dall'API;
-            ciclo_vendite(vendite);
+    // Pulisco il contenuto del div contenitore dei grafici per "resettare" i dati;
+    $('.charts').empty();
+    // ristampo il contuneto in pagina
+    $('.charts').append('<canvas id="myChart"></canvas>','<canvas id="myChart2"></canvas>');
 
-            // estraggo i valori dell'oggetto mesi indicante la vendita per ciascun mese;
-            var valori = Object.values(mesi);
+    // faccio partire chiamata ajax per ricavare la lista delle vendite;
+    $.ajax({
+            'url': 'http://157.230.17.132:4025/sales',
+            'method': 'GET',
+            'success': function(data) {
+                vendite = data;
 
-            // richiamo la funzione per generare il grafico;
-            create_chart(valori);
+                // richiamo la funzione per ciclare il risultato otteneto dall'API;
+                ciclo_vendite(vendite);
 
-        },
-    'error': function() {
-        alert('si è verificato un errore');
-    }
-});
+                // estraggo i valori dell'oggetto mesi indicante la vendita per ciascun mese;
+                var valori = Object.values(mesi);
 
-// funzione per ciclare l'array ricevuto come risposta dall'API;
+                // richiamo la funzione per generare il grafico;
+                create_chart(valori);
 
-var mesi = {};
-var sellers = {}
-var fatturato_totale = 0;
-function ciclo_vendite(vendite) {
-
-    for (var i = 0; i < vendite.length; i++) {
-        var vendita = vendite[i];
-
-        var valore_vendita_corrente = parseInt(vendita.amount);
-        var current_month = extract_month(vendita.date);
-        var current_seller = vendita.salesman;
-
-        fatturato_totale += valore_vendita_corrente;
-
-
-        if(!mesi.hasOwnProperty(current_month)) {
-            mesi[current_month] = valore_vendita_corrente;
-        } else {
-            mesi[current_month] += valore_vendita_corrente;
+            },
+        'error': function() {
+            alert('si è verificato un errore');
         }
+    });
 
-        if(!sellers.hasOwnProperty(current_seller)) {
-            sellers[current_seller] = valore_vendita_corrente;
-        } else {
-            sellers[current_seller] += valore_vendita_corrente;
+    // funzione per ciclare l'array ricevuto come risposta dall'API;
+
+    var mesi = {};
+    var sellers = {}
+    var fatturato_totale = 0;
+    function ciclo_vendite(vendite) {
+
+        for (var i = 0; i < vendite.length; i++) {
+            var vendita = vendite[i];
+
+            // salvo ogni singolo valore delle keys richiamate in un'appostia variabile;
+            var valore_vendita_corrente = parseInt(vendita.amount);
+            var current_month = extract_month(vendita.date);
+            var current_seller = vendita.salesman;
+
+            // sommo ogni singola vendita dell'anno per ricavare il valore totale generico delle vendite dell'anno 2017;;
+            fatturato_totale += valore_vendita_corrente;
+
+            // inserisco i singoli dati ricavati nel loro rispettivo oggetto facendo push di volta in volta;
+            if(!mesi.hasOwnProperty(current_month)) {
+                mesi[current_month] = valore_vendita_corrente;
+            } else {
+                mesi[current_month] += valore_vendita_corrente;
+            }
+
+            if(!sellers.hasOwnProperty(current_seller)) {
+                sellers[current_seller] = valore_vendita_corrente;
+            } else {
+                sellers[current_seller] += valore_vendita_corrente;
+            }
         }
-    }
-    console.log(fatturato_totale);
-    var values = Object.values(sellers);
-    var percentuali = [];
-    for (var i = 0; i < values.length; i++) {
-        var valore_corrente = values[i]
-        percentuali.push(((valore_corrente / fatturato_totale ) * 100).toFixed(2));
+        // ricavo un array dall'oggetto sellers con la somma delle vendite divise per ciascun venditore.
+        var values = Object.values(sellers);
+        var percentuali = [];
+        // ciclo l'array ricavato e converto i valori in percentuale;
+        for (var i = 0; i < values.length; i++) {
+            var valore_corrente = values[i]
+            percentuali.push(((valore_corrente / fatturato_totale ) * 100).toFixed(2));
+
+
+        }
+        // ricavo un array dall'oggetto sellers contente il nome di ciascun venditore;
+        var chiavi = Object.keys(sellers)
+
+        // richiamo funzione per generare il secondo grafico;
+        grafico_vendite_percentuale(chiavi, percentuali)
 
 
     }
-    var chiavi = Object.keys(sellers)
-
-    // richiamo funzione per generare il secondo grafico;
-    grafico_vendite_percentuale(chiavi, percentuali)
-
-
 }
 
-console.log(sellers);
-
-
 // funzione per ricavare solo il mese dalla data completa;
+// utilizzo le librerie di "moment" per ottenere il dato desiderato;
 function extract_month(date) {
     var check = moment(date, 'DD/MM/YYYY');
     var month = check.format('M');
@@ -140,6 +153,17 @@ function create_chart(valori) {
             }]
         },
         options: {
+            // di seguito le istruzioni per far comparire il simbolo dell'euro in parte ad ogni importo;
+            tooltips: {
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            var label = data.datasets[tooltipItem.datasetIndex].label + ': ';
+                            label += tooltipItem.yLabel;
+                            label += ' €';
+                            return label;
+                        }
+                    }
+                },
             title: {
                 display: true,
                 text: 'Fatturato anno 2017 suddiviso per mese'
@@ -152,6 +176,7 @@ function create_chart(valori) {
 // creo una funzione;
 
 function grafico_vendite_percentuale(chiavi, percentuali) {
+
     // creo il grafico con chartjs;
     var ctx = $('#myChart2')[0].getContext('2d');
 
@@ -179,6 +204,16 @@ function grafico_vendite_percentuale(chiavi, percentuali) {
             }]
         },
         options: {
+            // di seguito le istruzioni per stampare in parte al valore percentuale il simbolo "%"
+            tooltips: {
+                callbacks: {
+                    label: function(tooltipItem, data) {
+                        var nome_venditore = data.labels[tooltipItem.index];
+                        var percentuale_vendite = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return nome_venditore + ': ' + percentuale_vendite + '%';
+                    }
+                }
+            },
             title: {
                 display: true,
                 text: 'Fatturato anno 2017 suddiviso in percentuale per ogni venditore'
@@ -190,30 +225,42 @@ function grafico_vendite_percentuale(chiavi, percentuali) {
 // Milestone   2:
 // Ora   vogliamo   dare   la   possibilità   di   aggiungere   vendite. Creiamo   due   select,   una   contenente   i   nostri   venditori   e   l’altra   contenente   i mesi   dell’anno   e   una   input   per   inserire   il   valore   della   vendita. Aggiungiamo   un   bottone   e   onClick   dovremo   aggiungere   una   vendita   del valore   inserito   al   venditore   selezionato   per   il   mese   selezionato,   facendo   una chiamata   POST   a   /sales. I   grafici   andranno   modificati   mostrando   i   nuovi   dati.
 
-
-
 var aggiungi_vendita = {};
 
+// aggancio il click del mouse al bottone;
 $('button').click(function() {
     var venditore = $('.sellers').val();
     var input_val = $('.valore').val();
     var mese = $('.months').val();
-    aggiungi_vendita['salesman'] = venditore;
-    aggiungi_vendita['amount'] = parseInt(input_val);
-    aggiungi_vendita['date'] = mese;
 
-    //
-    $.ajax({
-            'url': 'http://157.230.17.132:4025/sales',
-            'method': 'POST',
-            'data': aggiungi_vendita,
-            'success': function(data){
-                console.log(data);
-            },
-        'error': function() {
-            alert('si è verificato un errore');
-        }
-    });
+    // controllo che vengano inseriti i dati corretti prima di creare l'oggetto da postare;
+    if (venditore != '' &&  !isNaN(input_val) && input_val != '' && input_val > 0 && mese != '') {
+        aggiungi_vendita['salesman'] = venditore;
+        aggiungi_vendita['amount'] = parseInt(input_val);
+        aggiungi_vendita['date'] = mese;
+
+        //faccio partire la chiamata ajax che invierà i dati inseriti all'API e li aggiiungerà permanentemente alla lista di oggetti che otteniamo ogni qual volta che effuttuiamo una chiamata 'GET';
+        $.ajax({
+                'url': 'http://157.230.17.132:4025/sales',
+                'method': 'POST',
+                'data': aggiungi_vendita,
+                'success': function(data){
+                    generate_charts();
+                },
+            'error': function() {
+                alert('si è verificato un errore');
+            }
+        });
+    //di seguito inserisco tutti gli avvisi mirati che compariranno sottoforma di alert in caso l'utente inserisca dei dati non validi o incompleti. 
+    } else if (venditore == '') {
+        alert('Seleziona nome del venditore')
+    } else if (isNaN(input_val)) {
+        alert('Non hai inserito un numero. Inserisci un numero valido')
+    } else if (input_val == '') {
+        alert('Campo importo vendita vuoto. Inserisci un importo valido')
+    } else if (input_val <= 0) {
+        alert('Hai inserito un importo non valido. Inserisci un numero maggiore di 0')
+    } else {
+        alert('Seleziona il mese')
+    }
 })
-
-console.log(aggiungi_vendita);
