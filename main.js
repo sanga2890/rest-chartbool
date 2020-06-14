@@ -235,6 +235,13 @@ $('button').click(function() {
 
     // controllo che vengano inseriti i dati corretti prima di creare l'oggetto da postare;
     if (venditore != '' &&  !isNaN(input_val) && input_val != '' && input_val > 0 && mese != '') {
+
+        //resetto i valori delle select e dell'input;
+        $('.sellers').val('');
+        $('.valore').val('');
+        $('.months').val('');
+
+        // creo il nuovo oggetto che andrò poi a postare con la chiamata ajax seguente;
         aggiungi_vendita['salesman'] = venditore;
         aggiungi_vendita['amount'] = parseInt(input_val);
         aggiungi_vendita['date'] = mese;
@@ -251,7 +258,7 @@ $('button').click(function() {
                 alert('si è verificato un errore');
             }
         });
-    //di seguito inserisco tutti gli avvisi mirati che compariranno sottoforma di alert in caso l'utente inserisca dei dati non validi o incompleti. 
+    //di seguito inserisco tutti gli avvisi mirati che compariranno sottoforma di alert in caso l'utente inserisca dei dati non validi o incompleti.
     } else if (venditore == '') {
         alert('Seleziona nome del venditore')
     } else if (isNaN(input_val)) {
